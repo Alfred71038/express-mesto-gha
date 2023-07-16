@@ -65,7 +65,10 @@ const deleteCards = (req, res) => {
 
   Card.findByIdAndRemove(cardId)
     .then((card) => {
-      res.send(card);
+      if (!card) {
+        return res.status(ERROR_CODE.NOT_FOUND).send({ message: 'Карточка не найдена' });
+      }
+      return res.send(card);
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
