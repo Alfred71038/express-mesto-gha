@@ -21,7 +21,10 @@ const getUser = (req, res) => {
   const { userId } = req.params;
   User.findById(userId)
     .then((user) => {
-      res.send(user);
+      if (!user) {
+        return res.status(ERROR_CODE.NOT_FOUND).send({ message: 'Пользователь не найден' });
+      }
+      return res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
@@ -53,7 +56,10 @@ const updateUser = (req, res) => {
     },
   )
     .then((user) => {
-      res.send(user);
+      if (!user) {
+        return res.status(ERROR_CODE.NOT_FOUND).send({ message: 'Пользователь не найден' });
+      }
+      return res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
@@ -76,7 +82,10 @@ const updateAvatar = (req, res) => {
     },
   )
     .then((user) => {
-      res.send(user);
+      if (!user) {
+        return res.status(ERROR_CODE.NOT_FOUND).send({ message: 'Пользователь не найден' });
+      }
+      return res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {

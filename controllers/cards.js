@@ -19,7 +19,7 @@ const createCard = (req, res) => {
 const getCards = (req, res) => {
   Card.find({})
     .then((card) => {
-      res.send(card);
+      res.send({ card });
     })
     .catch(() => {
       res.status(ERROR_CODE.INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
