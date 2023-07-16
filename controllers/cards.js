@@ -28,8 +28,11 @@ const getCards = (req, res) => {
 
 const putCardLikes = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
-    .then((user) => {
-      res.send(user);
+    .then((card) => {
+      if (!card) {
+        return res.status(ERROR_CODE.NOT_FOUND).send({ message: 'Карточка не найдена' });
+      }
+      return res.send(card);
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
@@ -42,8 +45,11 @@ const putCardLikes = (req, res) => {
 
 const deleteCardLikes = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
-    .then((user) => {
-      res.send(user);
+    .then((card) => {
+      if (!card) {
+        return res.status(ERROR_CODE.NOT_FOUND).send({ message: 'Карточка не найдена' });
+      }
+      return res.send(card);
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
@@ -58,8 +64,8 @@ const deleteCards = (req, res) => {
   const { cardId } = req.params;
 
   Card.findByIdAndRemove(cardId)
-    .then((user) => {
-      res.send(user);
+    .then((card) => {
+      res.send(card);
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
