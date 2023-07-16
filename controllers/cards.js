@@ -1,5 +1,5 @@
 const Card = require('../models/card');
-const { ERROR_CODE } = require('../utils/errors');
+const { ERROR_CODE, ERROR_CARD_DATA_MESSAGE } = require('../utils/errors');
 
 const createCard = (req, res) => {
   const { name, link } = req.body;
@@ -7,9 +7,9 @@ const createCard = (req, res) => {
   Card.create({ name, link, owner: req.user._id })
     .then((user) => {
       res.status(ERROR_CODE.SUCCESS_CREATE).send(user);
-    }).catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(ERROR_CODE.BAD_REQUEST).send({ message: 'Введены некорректные данные при создании карточки' });
+    }).catch((error) => {
+      if (error.name === 'ValidationError') {
+        res.status(ERROR_CODE.BAD_REQUEST).send({ message: ERROR_CARD_DATA_MESSAGE });
       } else {
         res.status(ERROR_CODE.INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
       }
