@@ -5,6 +5,4 @@ const ERROR_CODE = {
   INTERNAL_SERVER_ERROR: 500,
 };
 
-const ERROR_CARD_DATA_MESSAGE = 'Введены некорректные данные при создании карточки';
-
-module.exports = { ERROR_CODE, ERROR_CARD_DATA_MESSAGE };
+module.exports = { ERROR_CODE };
