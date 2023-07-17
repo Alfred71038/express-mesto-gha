@@ -4,8 +4,8 @@ const cardSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    minlight: 2,
-    maxlight: 30,
+    minlength: 2,
+    maxlength: 30,
   },
   link: {
     type: String,
@@ -20,7 +20,7 @@ const cardSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     default: [],
   }],
-  createdAt: {
+  createAt: {
     type: Date,
     default: Date.now,
   },
