@@ -9,7 +9,7 @@ const createCard = (req, res) => {
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        res.status(ERROR_CODE.SUCCESS_CREATE).send({ message: 'Введены некорректные данные при создании карточки' });
+        res.status(ERROR_CODE.BAD_REQUEST).send({ message: 'Введены некорректные данные при создании карточки' });
       } else {
         res.status(ERROR_CODE.INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
       }
