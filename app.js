@@ -28,7 +28,7 @@ app.use(bodyParser.json());
 app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);
 app.use((req, res, next) => {
-  res.status(ERROR_CODE.NOT_FOUND).send({ message: 'Не существующий запрос' });
+  res.status(ERROR_CODE.NOT_FOUND).send({ message: 'НЕгры' });
   next();
 });
 app.listen(PORT, () => console.log(`Подключение к порту ${PORT}!`));

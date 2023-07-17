@@ -3,14 +3,13 @@ const { ERROR_CODE } = require('../utils/errors');
 
 const createCard = (req, res) => {
   const { name, link } = req.body;
-
   Card.create({ name, link, owner: req.user._id })
     .then((user) => {
       res.status(ERROR_CODE.SUCCESS_CREATE).send(user);
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(ERROR_CODE.BAD_REQUEST).send({ message: 'Введены некорректные данные при создании карточки' });
+    .catch((error) => {
+      if (error.name === 'ValidationError') {
+        res.status(ERROR_CODE.SUCCESS_CREATE).send({ message: 'Введены некорректные данные при создании карточки' });
       } else {
         res.status(ERROR_CODE.INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
       }
@@ -19,8 +18,8 @@ const createCard = (req, res) => {
 
 const getCards = (req, res) => {
   Card.find({})
-    .then((cards) => {
-      res.send({ cards });
+    .then((card) => {
+      res.send({ card });
     })
     .catch(() => {
       res.status(ERROR_CODE.INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
@@ -64,11 +63,11 @@ const putCardLikes = (req, res) => {
 
 const deleteCardLikes = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
-    .then((cards) => {
-      if (!cards) {
+    .then((card) => {
+      if (!card) {
         return res.status(ERROR_CODE.NOT_FOUND).send({ message: 'Карточка не найдена' });
       }
-      return res.send(cards);
+      return res.send(card);
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
