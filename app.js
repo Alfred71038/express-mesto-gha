@@ -1,16 +1,22 @@
 const express = require('express');
+
 const mongoose = require('mongoose');
+
 const bodyParser = require('body-parser');
+
+const cookieParser = require('cookie-parser');
 
 const { PORT = 3000 } = process.env;
 
 const app = express();
 
-const usersRouter = require('./routes/users');
-
-const cardsRouter = require('./routes/cards');
+const { errors } = require('celebrate');
 
 const { ERROR_CODE } = require('./utils/errors');
+
+const router = require('./routes/index');
+
+const err = require('./middlewares/error');
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb')
   .then(() => {
@@ -19,16 +25,19 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb')
     console.log(`Ошибка при подключении к mongodb ${error.message}.`);
   });
 
+app.use(bodyParser.json());
+
+app.use(cookieParser());
+
+app.use(router);
+
+app.use(errors());
+
+app.use(err);
+
 app.use((req, res, next) => {
-  req.user = { _id: '64b3e49a99157b7e11d949a2' };
+  res.status(ERROR_CODE.NOT_FOUND).send({ message: 'Не известный запрос' });
   next();
 });
 
-app.use(bodyParser.json());
-app.use('/users', usersRouter);
-app.use('/cards', cardsRouter);
-app.use((req, res, next) => {
-  res.status(ERROR_CODE.NOT_FOUND).send({ message: 'НЕгры' });
-  next();
-});
 app.listen(PORT, () => console.log(`Подключение к порту ${PORT}!`));

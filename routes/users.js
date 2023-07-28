@@ -1,17 +1,19 @@
 const router = require('express').Router();
 
+const celebrate = require('../middlewares/celebrate');
+
 const {
-  createUser,
   getUser,
   getUsers,
+  getUserInfo,
   updateUser,
   updateAvatar,
 } = require('../controllers/users');
 
-router.post('/', createUser);
-router.get('/:userId', getUser);
+router.get('/:userId', celebrate.getUser, getUser);
 router.get('/', getUsers);
-router.patch('/me', updateUser);
-router.patch('/me/avatar', updateAvatar);
+router.get('/me', getUserInfo);
+router.patch('/me', celebrate.updateUser, updateUser);
+router.patch('/me/avatar', celebrate.updateAvatar, updateAvatar);
 
 module.exports = router;
