@@ -10,6 +10,8 @@ const UnauthorizedError = require('../utils/UnauthоrizedError');
 
 const BadRequest = require('../utils/BadRequest');
 
+const NotFound = require('../utils/NotFound');
+
 const { ERROR_CODE } = require('../utils/errors');
 
 const createUser = (req, res, next) => {
@@ -110,7 +112,7 @@ const getUser = (req, res, next) => {
   User.findById(userId)
     .then((user) => {
       if (!user) {
-        return res.status(ERROR_CODE.NOT_FOUND).send({ message: 'Пользователь не найден' });
+        return next(new NotFound('Пользователь не найден'));
       }
       return res.send(user);
     })
@@ -119,7 +121,7 @@ const getUser = (req, res, next) => {
 
 const updateUser = (req, res, next) => {
   const { name, about } = req.body;
-  User.findByIdAndUpdate(
+  return User.findByIdAndUpdate(
     req.user._id,
     { name, about },
     {
@@ -140,7 +142,7 @@ const updateUser = (req, res, next) => {
 const updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
-  User.findByIdAndUpdate(
+  return User.findByIdAndUpdate(
     req.user._id,
     { avatar },
     {
