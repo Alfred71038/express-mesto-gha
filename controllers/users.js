@@ -117,7 +117,7 @@ const getUsers = (req, res, next) => {
     .catch(next);
 };
 
-const updateUser = (req, res, next) => {
+/* const updateUser = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
@@ -135,9 +135,37 @@ const updateUser = (req, res, next) => {
       }
       return next(err);
     });
+}; */
+
+const updateUserData = (Name, data, req, res, next) => {
+  Name.findByIdAndUpdate(req.user._id, data, { new: true, runValidators: true })
+    .then((user) => {
+      res.send(user);
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(
+          new BadRequest(
+            'Переданы некорректные данные при обновлении профиля',
+          ),
+        );
+      } else {
+        next(err);
+      }
+    });
 };
 
-const updateAvatar = (req, res, next) => {
+const updateUser = (req, res, next) => {
+  const { name, about } = req.body;
+  updateUserData(User, { name, about }, req, res, next);
+};
+
+const updateUsersAvatar = (req, res, next) => {
+  const { avatar } = req.body;
+  updateUserData(User, { avatar }, req, res, next);
+};
+
+/* const updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(
@@ -150,7 +178,7 @@ const updateAvatar = (req, res, next) => {
   )
     .then((user) => (res.send(user)))
     .catch(next);
-};
+}; */
 
 module.exports = {
   createUser,
@@ -158,6 +186,6 @@ module.exports = {
   getUsers,
   getUserInfo,
   updateUser,
-  updateAvatar,
+  updateUsersAvatar,
   login,
 };

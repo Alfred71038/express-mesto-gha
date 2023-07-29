@@ -11,9 +11,9 @@ const {
 } = require('../controllers/cards');
 
 router.get('/', getCards);
-router.post('/', celebrate.createCard, createCard);
-router.delete('/:cardId', celebrate.getCardId, deleteCards);
-router.put('/:cardId/likes', celebrate.getCardId, putCardLikes);
-router.delete('/:cardId/likes', celebrate.getCardId, deleteCardLikes);
+router.post('/', celebrate.celebrateCreateCard, createCard);
+router.delete('/:cardId', celebrate.celebrateGetCardId, deleteCards);
+router.put('/:cardId/likes', celebrate.celebrateGetCardId, putCardLikes);
+router.delete('/:cardId/likes', celebrate.celebrateGetCardId, deleteCardLikes);
 
 module.exports = router;

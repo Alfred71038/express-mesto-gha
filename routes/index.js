@@ -6,8 +6,8 @@ const cardsRouter = require('./cards');
 const { createUser, login } = require('../controllers/users');
 const NotFound = require('../utils/NotFound');
 
-router.post('/signup', celebrate.createUser, createUser);
-router.post('/signin', celebrate.login, login);
+router.post('/signup', celebrate.celebrateCreateUser, createUser);
+router.post('/signin', celebrate.celebrateLogin, login);
 
 router.use(auth);
 
