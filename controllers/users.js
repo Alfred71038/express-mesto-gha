@@ -27,8 +27,6 @@ const createUser = (req, res, next) => {
         password: hash,
       })
         .then((user) => {
-          // eslint-disable-next-line no-param-reassign
-          user.password = undefined;
           res.status(ERROR_CODE.SUCCESS_CREATE).send(user);
         })
         .catch((err) => {
@@ -57,7 +55,7 @@ const login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { id: user._id },
-        'super_strong_password',
+        'some-secret-key',
         { expiresIn: '7d' },
       );
       return res.cookie('jwt', token, {
