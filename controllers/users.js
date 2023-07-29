@@ -6,8 +6,6 @@ const User = require('../models/user');
 
 const ConflictError = require('../utils/ConflictError');
 
-const UnauthorizedError = require('../utils/UnauthоrizedError');
-
 const BadRequest = require('../utils/BadRequest');
 
 const NotFound = require('../utils/NotFound');
@@ -50,43 +48,6 @@ const createUser = (req, res, next) => {
             next(err);
           }
         });
-    })
-    .catch(next);
-};
-
-const login = (req, res, next) => {
-  const { email, password } = req.body;
-
-  User.findOne({ email }).select('+password')
-    .then((user) => {
-      if (!user) {
-        throw new UnauthorizedError('Неправильные почта или пароль');
-      } else {
-        return bcrypt.compare(password, user.password)
-          .then((matched) => {
-            if (matched) {
-              const token = jwt.sign(
-                { id: user._id },
-                'super_strong_password',
-                { expiresIn: '7d' },
-              );
-              res.cookie('jwt', token, {
-                maxAge: 3600000 * 24 * 7,
-                httpOnly: true,
-                sameSite: true,
-              });
-              const {
-                _id, name, about, avatar,
-              } = user;
-              res.send({
-                _id, name, about, avatar, email,
-              });
-            } else {
-              throw new UnauthorizedError('Неправильные почта или пароль');
-            }
-          })
-          .catch(next);
-      }
     })
     .catch(next);
 };
@@ -157,6 +118,24 @@ const updateAvatar = (req, res, next) => {
       }
       return next(err);
     });
+};
+
+const login = (req, res, next) => {
+  const { email, password } = req.body;
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign(
+        { _id: user._id },
+        'super_strong_password',
+        { expiresIn: '7d' },
+      );
+      return res.cookie('jwt', token, {
+        maxAge: 3600000 * 24 * 7,
+        httpOnly: true,
+        sameSite: true,
+      }).send({ _id: user._id });
+    })
+    .catch(next);
 };
 
 module.exports = {
