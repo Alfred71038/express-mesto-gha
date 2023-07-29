@@ -28,11 +28,12 @@ const deleteCards = (req, res, next) => {
   Card.findById(cardId)
     .then((card) => {
       if (!card) {
-        throw new NotFound('Карточка не найдена');
-      } else if (card.owner.toString() !== req.user._id) {
-        return Promise.reject(new ForbiddenError('Вы не можете удалить чужую карточку'));
+        return next(new NotFound('Карточка не найдена'));
+      } if (card.owner.equals(req.user._id)) {
+        return card.deleteOne().then(() => res.status(200).send({ message: 'Карточка удалена' }));
+        // return Promise.reject(new ForbiddenError('Вы не можете удалить чужую карточку'));
       }
-      return card.deleteOne().then(() => res.status(200).send({ message: 'Карточка удалена' }));
+      return next(new ForbiddenError('Вы не можете удалить чужую карточку'));
     })
     .catch(next);
 };
