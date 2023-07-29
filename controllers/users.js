@@ -8,8 +8,6 @@ const ConflictError = require('../utils/ConflictError');
 
 const BadRequest = require('../utils/BadRequest');
 
-const UnauthоrizedError = require('../utils/UnauthоrizedError');
-
 const { ERROR_CODE } = require('../utils/errors');
 
 const createUser = (req, res, next) => {
@@ -55,36 +53,19 @@ const createUser = (req, res, next) => {
 const login = (req, res, next) => {
   const { email, password } = req.body;
 
-  User.findOne({ email }).select('+password')
+  return User.findUserByCredentials(email, password)
     .then((user) => {
-      if (!user) {
-        throw new UnauthоrizedError('Неправильные почта или пароль');
-      } else {
-        return bcrypt.compare(password, user.password)
-          .then((matched) => {
-            if (matched) {
-              const token = jwt.sign(
-                { id: user._id },
-                'super_strong_password',
-                { expiresIn: '7d' },
-              );
-              res.cookie('jwt', token, {
-                maxAge: 3600000 * 24 * 7,
-                httpOnly: true,
-                sameSite: true,
-              });
-              const {
-                _id, name, about, avatar,
-              } = user;
-              res.send({
-                _id, name, about, avatar, email,
-              });
-            } else {
-              throw new UnauthоrizedError('Неправильные почта или пароль');
-            }
-          })
-          .catch(next);
-      }
+      const token = jwt.sign(
+        { id: user._id },
+        'super_strong_password',
+        { expiresIn: '7d' },
+      );
+      return res.cookie('jwt', token, {
+        maxAge: 3600000 * 24 * 7,
+        httpOnly: true,
+        sameSite: true,
+      })
+        .send({ _id: user._id });
     })
     .catch(next);
 };
