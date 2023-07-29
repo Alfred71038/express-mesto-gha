@@ -125,10 +125,16 @@ const updateUser = (req, res, next) => {
     {
       new: true,
       runValidators: true,
+      upsert: false,
     },
   )
     .then((user) => (res.send(user)))
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        return next(new BadRequest('Переданы некорректные данные при обновлении профиля'));
+      }
+      return next(err);
+    });
 };
 
 const updateAvatar = (req, res, next) => {
