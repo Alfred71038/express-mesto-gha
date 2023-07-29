@@ -70,7 +70,7 @@ const login = (req, res, next) => {
     .catch(next);
 };
 
-const getUser = (req, res) => {
+const getUser = (req, res, next) => {
   const { userId } = req.params;
   User.findById(userId)
     .then((user) => {
@@ -79,23 +79,15 @@ const getUser = (req, res) => {
       }
       return res.send(user);
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        res.status(ERROR_CODE.BAD_REQUEST).send({ message: 'Данные не найдены' });
-      } else {
-        res.status(ERROR_CODE.INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
-      }
-    });
+    .catch(next);
 };
 
-const getUsers = (req, res) => {
+const getUsers = (req, res, next) => {
   User.find({})
     .then((user) => {
       res.send(user);
     })
-    .catch(() => {
-      res.status(ERROR_CODE.INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
-    });
+    .catch(next);
 };
 
 const getUserInfo = (req, res, next) => {
@@ -104,7 +96,7 @@ const getUserInfo = (req, res, next) => {
     .catch(next);
 };
 
-const updateUser = (req, res) => {
+const updateUser = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
@@ -120,16 +112,10 @@ const updateUser = (req, res) => {
       }
       return res.send(user);
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        res.status(ERROR_CODE.BAD_REQUEST).send({ message: 'Введены некорректные данные при редактировании профиля' });
-      } else {
-        res.status(ERROR_CODE.INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
-      }
-    });
+    .catch(next);
 };
 
-const updateAvatar = (req, res) => {
+const updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(
@@ -146,13 +132,7 @@ const updateAvatar = (req, res) => {
       }
       return res.send(user);
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        res.status(ERROR_CODE.BAD_REQUEST).send({ message: 'Введены некорректные данные при редактировании аватара' });
-      } else {
-        res.status(ERROR_CODE.INTERNAL_SERVER_ERROR).send({ message: 'Ошибка сервера' });
-      }
-    });
+    .catch(next);
 };
 
 module.exports = {
