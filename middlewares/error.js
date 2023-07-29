@@ -9,5 +9,4 @@ const error = (err, req, res, next) => {
   next();
 };
 
-
 module.exports = error;

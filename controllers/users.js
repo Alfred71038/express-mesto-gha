@@ -57,7 +57,7 @@ const login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { id: user._id },
-        'super-secret-key',
+        'super_strong_password',
         { expiresIn: '7d' },
       );
       return res.cookie('jwt', token, {
@@ -66,6 +66,14 @@ const login = (req, res, next) => {
         sameSite: true,
       })
         .send({ _id: user._id });
+    })
+    .catch(next);
+};
+
+const getUserInfo = (req, res, next) => {
+  User.findById(req.user._id).select('+email')
+    .then((user) => {
+      res.send(user);
     })
     .catch(next);
 };
@@ -90,12 +98,6 @@ const getUsers = (req, res, next) => {
     .catch(next);
 };
 
-const getUserInfo = (req, res, next) => {
-  User.findById(req.user._id).select('+email')
-    .then((user) => { res.send(user); })
-    .catch(next);
-};
-
 const updateUser = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(
@@ -106,12 +108,7 @@ const updateUser = (req, res, next) => {
       runValidators: true,
     },
   )
-    .then((user) => {
-      if (!user) {
-        return res.status(ERROR_CODE.NOT_FOUND).send({ message: 'Пользователь не найден' });
-      }
-      return res.send(user);
-    })
+    .then((user) => (res.send(user)))
     .catch(next);
 };
 
@@ -126,12 +123,7 @@ const updateAvatar = (req, res, next) => {
       runValidators: true,
     },
   )
-    .then((user) => {
-      if (!user) {
-        return res.status(ERROR_CODE.NOT_FOUND).send({ message: 'Пользователь не найден' });
-      }
-      return res.send(user);
-    })
+    .then((user) => (res.send(user)))
     .catch(next);
 };
 
