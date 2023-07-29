@@ -17,8 +17,8 @@ const createCard = (req, res, next) => {
 
 const getCards = (req, res, next) => {
   Card.find({})
-    .then((card) => {
-      res.send({ card });
+    .then((cards) => {
+      res.send({ cards });
     })
     .catch(next);
 };

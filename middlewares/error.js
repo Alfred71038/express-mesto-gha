@@ -1,6 +1,6 @@
 const { ERROR_CODE } = require('../utils/errors');
 
-module.exports = (err, req, res, next) => {
+const error = (err, req, res, next) => {
   if (!err.statusCode) {
     res.status(ERROR_CODE.INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' });
   } else {
@@ -8,3 +8,6 @@ module.exports = (err, req, res, next) => {
   }
   next();
 };
+
+
+module.exports = error;

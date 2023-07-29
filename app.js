@@ -12,17 +12,17 @@ const app = express();
 
 const { errors } = require('celebrate');
 
-const { ERROR_CODE } = require('./utils/errors');
-
 const router = require('./routes/index');
 
-const err = require('./middlewares/error');
+const error = require('./middlewares/error');
+
+const NotFound = require('./utils/NotFound');
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb')
   .then(() => {
     console.log('Подключение к mongodb.');
-  }).catch((error) => {
-    console.log(`Ошибка при подключении к mongodb ${error.message}.`);
+  }).catch((err) => {
+    console.log(`Ошибка при подключении к mongodb ${err.message}.`);
   });
 
 app.use(bodyParser.json());
@@ -33,11 +33,10 @@ app.use(router);
 
 app.use(errors());
 
-app.use(err);
+app.use(error);
 
-app.use((req, res, next) => {
-  res.status(ERROR_CODE.NOT_FOUND).send({ message: 'Не известный запрос' });
-  next();
+app.use('/', (req, res, next) => {
+  next(new NotFound('Не известный запрос'));
 });
 
 app.listen(PORT, () => console.log(`Подключение к порту ${PORT}!`));
