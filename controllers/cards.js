@@ -4,6 +4,8 @@ const { ERROR_CODE } = require('../utils/errors');
 
 const NotFound = require('../utils/NotFound');
 
+const BadRequest = require('../utils/BadRequest');
+
 const ForbiddenError = require('../utils/ForbiddenError');
 
 const createCard = (req, res, next) => {
@@ -12,7 +14,12 @@ const createCard = (req, res, next) => {
     .then((user) => {
       res.status(ERROR_CODE.SUCCESS_CREATE).send(user);
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return next(new BadRequest('Переданы некорректные данные при создании карточки'));
+      }
+      return next(err);
+    });
 };
 
 const getCards = (req, res, next) => {
@@ -52,7 +59,7 @@ const deleteCardLikes = (req, res, next) => {
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (!card) {
-        return res.status(ERROR_CODE.NOT_FOUND).send({ message: 'Карточка не найдена' });
+        return next(new NotFound('Карточка не найдена'));
       }
       return res.send(card);
     })
